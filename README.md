@@ -12,12 +12,11 @@ This solution allows for seamless dive log synchronization with **Subsurface** w
 * **Stop bits:** 1
 * **Transmission Type:** Half-Duplex (Transmission and reception occur over a single shared DATA wire)
 
-### 2. Wiring Diagram (Pinout)
+## 2. Wiring Diagram (Pinout)
 
-The connection is established using only **two direct wires** between the ESP32 and the brass contacts located on the back of the dive computer case (next to the battery hatch). 
+The connection is established using only **two direct wires** between the ESP32 and the brass contacts located on the back of the dive computer case (next to the battery hatch).
 
-
-
+```text
 ===================================================================
       ESP32 NodeMCU                               MARES PUCK PRO+
 ===================================================================
@@ -31,12 +30,13 @@ The connection is established using only **two direct wires** between the ESP32 
    +-----------+                           |                       |
 
                                            |     [ BATTERY ]       |
-   +-----------+                           |    [  HATCH  ]        |
+                                           |    [  HATCH  ]        |
+   +-----------+                           |                       |
 
    |    D4     | -------------------------> \    (•) DATA         /  <-- Bottom pin
    +-----------+                             \___________________/
                                               [ STRAP MOUNT ]
-
+```
 
 * **Top Mares Pin** (closer to the strap mount) ➡️ **GND** on the ESP32
 * **Bottom Mares Pin** (closer to the circular battery cover) ➡️ **D4 (GPIO4)** on the ESP32
