@@ -1,29 +1,29 @@
 void setup() {
-  // 1. Sprzętowy port USB do połączenia z komputerem PC (115200, Parity Even)
+  // 1. Hardware USB port for PC connection (115200, Parity Even)
   Serial.begin(115200, SERIAL_8E1);
 
-  // 2. Sprzętowy port Serial2 przypisany do pinu 4 (D4) dla zegarka Mares
+  // 2. Hardware Serial2 port assigned to Pin 4 (D4) for the Mares dive computer
   Serial2.begin(115200, SERIAL_8E1, 4, 4, false);
   Serial2.setPins(4, 4, -1, -1); 
 }
 
 void loop() {
-  // Dane z PC (USB) -> do Maresa (Pin 4)
+  // Data from PC (USB) -> to Mares (Pin 4)
   if (Serial.available()) {
     int bytesWritten = 0;
     
-    // Przesyłamy pakiety z USB bezpośrednio na linię zegarka
+    // Forward packets from USB directly to the dive computer line
     while (Serial.available()) {
       Serial2.write(Serial.read());
       bytesWritten++;
     }
     
-    // Czekamy na sprzętowe zakończenie nadawania (opróżnienie rejestru przesuwnego)
+    // Wait for the hardware transmission to complete (flush the shift register)
     Serial2.flush(); 
     
-    // PERFEKCYJNE WYCINANIE ECHA:
-    // Wiemy dokładnie, ile bajtów wysłaliśmy. Czekamy chwilę i usuwamy z bufora wejściowego
-    // dokładnie taką samą liczbę bajtów, aby nie trafiły do programu Subsurface jako echo.
+    // PERFECT ECHO CANCELLATION:
+    // We know exactly how many bytes were sent. We wait briefly and remove 
+    // the identical number of bytes from the RX buffer so they do not return to Subsurface.
     delayMicroseconds(bytesWritten * 90); 
     while (bytesWritten > 0 && Serial2.available() > 0) {
       Serial2.read();
@@ -31,11 +31,11 @@ void loop() {
     }
   }
 
-  // Dane z Maresa (Pin 4) -> do PC (USB)
+  // Data from Mares (Pin 4) -> to PC (USB)
   if (Serial2.available()) {
     while (Serial2.available()) {
       Serial.write(Serial2.read());
     }
-    Serial.flush(); // Upewniamy się, że Windows dostał czysty strumień bez opóźnień
+    Serial.flush(); // Ensure Windows receives a clean, lag-free data stream
   }
 }
